@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-
-from .models import Company,Vacancy
+from api.models import Company,Vacancy
 
 
 def companies_list(request):
@@ -33,13 +32,14 @@ def vacancies_list(request):
     vacancies_json =[vacancy.to_json() for vacancy in vacancies]
     return JsonResponse(vacancies_json,safe=False)
 
-def vacancy_detail(request,vacancy_id):
+def vacancy_detail(request, vacancy_id):
     try:
-        vacancy=Vacancy.objects.get(id=vacancy_id)
+        vacancy=Vacancy.objects.get(id=vacancy_id).to_json()
+
     except Vacancy.DoesNotExist as e:
         return JsonResponse({'error':str(e)})
 
-    return JsonResponse(vacancy.to_json())
+    return JsonResponse(vacancy)
 
 def company_vacancies(request,company_id):
     try:
@@ -55,3 +55,6 @@ def vacancies_top_ten(request):
     vacancies= Vacancy.objects.all().order_by('-salary')[:10];
     vacancies_json =[vacancy.to_json() for vacancy in vacancies]
     return JsonResponse(vacancies_json , safe=False)
+
+
+
